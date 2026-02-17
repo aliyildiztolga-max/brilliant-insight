@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CryptoRadar - Canlı</title>
+  <style>
+    body{font-family:system-ui,Arial;margin:20px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .card{border:1px solid #ddd;border-radius:10px;padding:12px;min-width:220px}
+    .muted{color:#666}
+    button{padding:10px 12px;border-radius:10px;border:1px solid #ddd;cursor:pointer}
+  </style>
+</head>
+<body>
+  <h2>CryptoRadar - Binance Canlı</h2>
+  <p class="muted">Bu sayfa GitHub Pages ile çalışır. Railway yok.</p>
+
+  <div style="margin:12px 0">
+    <button onclick="load()">Yenile</button>
+  </div>
+
+  <div id="out" class="row"></div>
+
+  <script>
+    const symbols = ["BTCUSDT","ETHUSDT","SOLUSDT","BNBUSDT","XRPUSDT","DOGEUSDT"];
+
+    async function load(){
+      const out = document.getElementById("out");
+      out.innerHTML = "Yükleniyor...";
+      try{
+        // Binance public endpoint
+        const res = await fetch("https://api.binance.com/api/v3/ticker/price");
+        const all = await res.json();
+
+        const map = new Map(all.map(x => [x.symbol, x.price]));
+        out.innerHTML = "";
+
+        for (const s of symbols){
+          const price = map.get(s);
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = <b>${s}</b><div class="muted">Fiyat</div><div style="font-size:20px">${price ?? "Yok"}</div>;
+          out.appendChild(div);
+        }
+      } catch(e){
+        out.innerHTML = "Hata: " + (e?.message || e);
+      }
+    }
+
+    load();
+    setInterval(load, 15000);
+  </script>
+</body>
+</html>
