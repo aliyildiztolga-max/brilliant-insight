@@ -1,0 +1,44 @@
+import express from "express";
+import cors from "cors";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// TEST verisi (Coinclass gelene kadar)
+let signals = [
+  {
+    coin: "BTCUSDT",
+    direction: "LONG",
+    entry: 67000,
+    tp: 69000,
+    sl: 66000,
+    time: new Date().toISOString()
+  }
+];
+
+// Health
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, time: new Date().toISOString() });
+});
+
+// Signals (Elementor buradan çekecek)
+app.get("/api/signals", (req, res) => {
+  res.json(signals);
+});
+
+// Basit ana sayfa
+app.get("/", (req, res) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.end(`
+    <h2>CryptoRadar API Çalışıyor ✅</h2>
+    <p>Test:</p>
+    <ul>
+      <li><a href="/api/health">/api/health</a></li>
+      <li><a href="/api/signals">/api/signals</a></li>
+    </ul>
+  `);
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Server running on", PORT))
